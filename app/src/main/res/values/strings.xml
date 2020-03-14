@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">HW3Movie</string>
+    <string name="base_url">https://api.themoviedb.org/3/</string>
+    <string name="picture_base_url">http://image.tmdb.org/t/p/w500/</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+</resources>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/search_movie"
+            android:icon="@android:drawable/ic_menu_search"
+            android:title=""
+            app:actionViewClass="android.widget.SearchView" app:showAsAction="collapseActionView|ifRoom"/>
+    <item android:id="@+id/like_movies"
+
+        android:title="like"
+            app:showAsAction="collapseActionView|ifRoom"
+        />
+    <item android:id="@+id/byTitle"
+
+            android:title="sort by title"
+            app:showAsAction="collapseActionView|ifRoom"
+            />
+    <item android:id="@+id/byRating"
+
+            android:title="sort by rating"
+            app:showAsAction="collapseActionView|ifRoom"
+            />
+
+</menu>
