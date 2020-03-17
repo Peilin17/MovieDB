@@ -34,6 +34,7 @@ class MovieViewModel(application: Application): AndroidViewModel(application){
     }
     companion object{
         val likeList = ArrayList<String>()
+        var page = 1;
     }
 
     fun refreshMovies(page: Int){
@@ -79,6 +80,13 @@ class MovieViewModel(application: Application): AndroidViewModel(application){
     {
         likeList.remove(i)
     }
+    fun getPage(): Int {
+        return page
+    }
+    fun setPage(i: Int){
+        page = i
+    }
+
 
 
 

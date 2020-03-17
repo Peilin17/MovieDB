@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
 
 
     val adapter = MovieListAdapter()
-
+    var modelg: MovieViewModel? = null
     override fun onQueryTextChange(newText: String?): Boolean {
         adapter.restore()
         adapter.search(newText)
@@ -94,7 +94,7 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
         recyclerView.layoutManager = LinearLayoutManager(this)
 
         val model = ViewModelProviders.of(this).get(MovieViewModel::class.java)
-
+        modelg = model
         model.allMovies.observe(
             this,
             Observer<List<MovieItem>>{ movies ->
@@ -106,6 +106,18 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
 
         (findViewById<Button>(R.id.refresh)).setOnClickListener{
             model.refreshMovies(1)
+            model.setPage(1)
+        }
+        (findViewById<Button>(R.id.prePage)).setOnClickListener {
+            if (model.getPage() > 1)
+            {
+                model.refreshMovies(model.getPage()-1)
+                model.setPage(model.getPage() -1)
+            }
+        }
+        (findViewById<Button>(R.id.nextPage)).setOnClickListener {
+            model.refreshMovies(model.getPage() +1)
+            model.setPage(model.getPage() +1)
         }
 
 
@@ -140,7 +152,20 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
 
         fun search(query: String?) {
 
+//            var temp1 = emptyList<MovieItem>()
+//            var temp2 = emptyList<MovieItem>()
             movies = movies.filter{it.title.contains(query!!)}
+//            temp1 = movies
+//            modelg?.refreshMovies((modelg?.getPage()!! + 1)!!)
+//            movies = movies.filter{it.title.contains(query!!)}
+//            temp2 = movies
+//            modelg?.refreshMovies((modelg?.getPage()!! + 2)!!)
+//            movies = movies.filter{it.title.contains(query!!)}
+//
+//            movies.flatMap { temp1 }
+//            movies.flatMap { temp2 }
+
+
 
             notifyDataSetChanged()
 
