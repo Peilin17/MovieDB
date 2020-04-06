@@ -13,25 +13,25 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
-import java.lang.Exception
 import java.text.SimpleDateFormat
-import kotlin.system.exitProcess
 
 
 class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
 
 
     val adapter = MovieListAdapter()
-    var modelg: MovieViewModel? = null
     override fun onQueryTextChange(newText: String?): Boolean {
         adapter.restore()
-        adapter.search(newText)
+
+        var temp = ArrayList<MovieItem>()
+        adapter.search(newText, temp)
         return true
     }
 
     override fun onQueryTextSubmit(query: String?): Boolean {
-
-        adapter.search(query)
+        var model  = ViewModelProviders.of(this).get(MovieViewModel::class.java)
+        var temp = model.getThree().filter { it.title.contains(query!!) }
+        adapter.search(query, temp as ArrayList<MovieItem>)
         return true
     }
 
@@ -68,7 +68,16 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
 
         when (item.itemId) {
             R.id.like_movies ->{
-               adapter.showLike(model.getLike())
+                var  temp = ArrayList<MovieItem>()
+                for (str in model.getLike())
+                {
+                    if (model.getThree().find { it.title == str } != null) {
+                        temp.add(model.getThree().find { it.title == str }!!)
+                    }
+
+                }
+                adapter.showLike(model.getLike(), temp)
+
             }
             R.id.byRating ->{
                 adapter.sortByRating()
@@ -94,7 +103,7 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
         recyclerView.layoutManager = LinearLayoutManager(this)
 
         val model = ViewModelProviders.of(this).get(MovieViewModel::class.java)
-        modelg = model
+
         model.allMovies.observe(
             this,
             Observer<List<MovieItem>>{ movies ->
@@ -103,7 +112,6 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
                 }
             }
         )
-
         (findViewById<Button>(R.id.refresh)).setOnClickListener{
             model.refreshMovies(1)
             model.setPage(1)
@@ -118,6 +126,7 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
         (findViewById<Button>(R.id.nextPage)).setOnClickListener {
             model.refreshMovies(model.getPage() +1)
             model.setPage(model.getPage() +1)
+            model.addThree(adapter.getMovies())
         }
 
 
@@ -150,36 +159,30 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
             notifyDataSetChanged()
         }
 
-        fun search(query: String?) {
-
-//            var temp1 = emptyList<MovieItem>()
-//            var temp2 = emptyList<MovieItem>()
+        fun search(query: String?, result: ArrayList<MovieItem>) {
             movies = movies.filter{it.title.contains(query!!)}
-//            temp1 = movies
-//            modelg?.refreshMovies((modelg?.getPage()!! + 1)!!)
-//            movies = movies.filter{it.title.contains(query!!)}
-//            temp2 = movies
-//            modelg?.refreshMovies((modelg?.getPage()!! + 2)!!)
-//            movies = movies.filter{it.title.contains(query!!)}
-//
-//            movies.flatMap { temp1 }
-//            movies.flatMap { temp2 }
-
-
-
+            result.addAll(movies)
+            movies = result
             notifyDataSetChanged()
-
         }
-        fun showLike(like: ArrayList<String>)
-        {
-            val  temp = ArrayList<MovieItem>()
+        fun showLike(
+            like: ArrayList<String>,
+            result: ArrayList<MovieItem>
+        ) {
+            var  temp = ArrayList<MovieItem>()
             for ((i, str) in like.withIndex())
             {
+                if (movies.find { it.title == str } != null) {
+                    temp.add(movies.find { it.title == str }!!)
+                }
 
-                temp.add( movies.find { it.title == str }!!)
             }
+            temp.addAll(result)
             movies = temp
             notifyDataSetChanged()
+        }
+        fun getMovies(): List<MovieItem> {
+            return movies
         }
 
         fun restore(){
@@ -222,8 +225,6 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
             holder.view.findViewById<TextView>(R.id.title).text=movies[position].title
 
             holder.view.findViewById<TextView>(R.id.rating).text=movies[position].vote_average.toString()
-
-
             holder.itemView.setOnClickListener(){
                 val intent = Intent(applicationContext, details::class.java).apply{
 //                    setClass(mContext, details::class.java)

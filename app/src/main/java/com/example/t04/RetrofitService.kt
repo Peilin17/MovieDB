@@ -11,7 +11,8 @@ import retrofit2.http.Query
 interface  RetrofitService {
     @GET("movie/now_playing?language=en-US")
     fun getNowPlaying(@Query("api_key") api_key: String, @Query("page") page: Int): Observable<Movies>
-
+    @GET("discover/movie?language=en-US")
+    fun getDiscover(@Query("api_key") api_key: String, @Query("with_keywords") with_keywords: String): Observable<Movies>
 
     companion object {
         fun create(baseUrl: String): RetrofitService {
